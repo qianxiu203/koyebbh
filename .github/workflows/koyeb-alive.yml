@@ -2,8 +2,13 @@ name: Koyeb登录保活
 
 on:
   schedule:
-    - cron: '0 0 */3 * *'  # 每周日执行一次
+    # 修正了时间表达式：'0 0 * * 0' 代表每周日 UTC 时间 00:00（北京时间周日早上 08:00）执行
+    - cron: '0 0 * * 0'
   workflow_dispatch:
+
+# 【核心优化 1】：必须显式赋予工作流写入仓库的权限，否则机器人无法执行 git push
+permissions:
+  contents: write
 
 jobs:
   login:
@@ -29,3 +34,20 @@ jobs:
         TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
         TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
       run: python koyeb-alive/koyeb-alive.py
+
+    # 【核心优化 2】：自动生成文件修改并提交，打破 60 天无活动自动休眠的限制
+    - name: Keepalive Commit
+      run: |
+        # 设置 GitHub Actions 官方机器人的名称和邮箱
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        
+        # 将当前执行时间写入日志文件，制造真实的文件变动
+        echo "Last keepalive run: $(date)" > keepalive.log
+        git add keepalive.log
+        
+        # 提交代码。使用 || exit 0 是为了防止万一文件没有变动时 git commit 报错导致整个工作流失败
+        git commit -m "chore: auto keepalive to prevent action disable" || exit 0
+        
+        # 推送回仓库
+        git push
