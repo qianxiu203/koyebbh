@@ -4,7 +4,7 @@
 # 老王sing-box安装脚本 - 青云志精简版
 # vless-version-reality|vmess-ws-tls(tunnel)|hysteria2|tuic5
 # nat小鸡安装后需要将端口修改为nat映射的端口
-# 最后更新时间: 2026.5.31[新增Anytls，socks5，ss2022(有封ip风险,建议ipv6使用)等协议]
+# 最后更新时间: 2026.5.30[新增Anytls，socks5，ss2022(有封ip风险,建议ipv6使用)等协议]
 # 删除订阅相关功能，改为直接输出节点链接到url.txt文件，方便用户复制使用
 # =========================
 
@@ -523,7 +523,7 @@ get_info() {
 
     if [ -f "${work_dir}/argo.log" ]; then
         for i in {1..5}; do
-            purple "第 $i 次尝试获取ArgoDoamin中..."
+            purple "第 $i 次尝试获取ArgoDomain中..."
             argodomain=$(sed -n 's|.*https://\([^/]*trycloudflare\.com\).*|\1|p' "${work_dir}/argo.log")
             [ -n "$argodomain" ] && break
             sleep 2
@@ -536,7 +536,7 @@ get_info() {
 
     green "\nArgoDomain：${purple}$argodomain${re}\n"
 
-    VMESS="{ \"v\": \"2\", \"ps\": \"${isp}\", \"add\": \"${CFIP}\", \"port\": \"${CFPORT}\", \"id\": \"${uuid}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"${argodomain}\", \"path\": \"/vmess-argo?ed=2560\", \"tls\": \"tls\", \"sni\": \"${argodomain}\", \"alpn\": \"\", \"fp\": \"firefox\", \"allowInsecure\": \"flase\"}"
+    VMESS="{ \"v\": \"2\", \"ps\": \"${isp}\", \"add\": \"${CFIP}\", \"port\": \"${CFPORT}\", \"id\": \"${uuid}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"${argodomain}\", \"path\": \"/vmess-argo?ed=2560\", \"tls\": \"tls\", \"sni\": \"${argodomain}\", \"alpn\": \"\", \"fp\": \"firefox\", \"allowInsecure\": \"false\"}"
 
     cat > ${work_dir}/url.txt << EOF
 vless://${uuid}@${server_ip}:${vless_port}?encryption=none&flow=xtls-rprx-vision&security=reality&sni=www.iij.ad.jp&fp=firefox&pbk=${public_key}&type=tcp&headerType=none#${isp}
@@ -832,7 +832,7 @@ change_config() {
             isp=$(curl -sm 3 -H "User-Agent: Mozilla/5.0" "https://api.ip.sb/geoip" | tr -d '\n' | \
                 awk -F\" '{c="";i="";for(x=1;x<=NF;x++){if($x=="country_code")c=$(x+2);if($x=="isp")i=$(x+2)};if(c&&i)print c"-"i}' | sed 's/ /_/g' || echo "$hostname")
             argodomain=$(grep -oE 'https://[[:alnum:]+\.-]+\.trycloudflare\.com' "${work_dir}/argo.log" | sed 's@https://@@')
-            VMESS="{ \"v\": \"2\", \"ps\": \"${isp}\", \"add\": \"${CFIP}\", \"port\": \"443\", \"id\": \"${new_uuid}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"${argodomain}\", \"path\": \"/vmess-argo?ed=2560\", \"tls\": \"tls\", \"sni\": \"${argodomain}\", \"alpn\": \"\", \"fp\": \"\", \"allowInsecure\": \"flase\"}"
+            VMESS="{ \"v\": \"2\", \"ps\": \"${isp}\", \"add\": \"${CFIP}\", \"port\": \"443\", \"id\": \"${new_uuid}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"${argodomain}\", \"path\": \"/vmess-argo?ed=2560\", \"tls\": \"tls\", \"sni\": \"${argodomain}\", \"alpn\": \"\", \"fp\": \"\", \"allowInsecure\": \"false\"}"
             encoded_vmess=$(echo "$VMESS" | base64 -w0)
             sed -i -E '/vmess:\/\//{s@vmess://.*@vmess://'"$encoded_vmess"'@}' $client_dir
             while IFS= read -r line; do yellow "$line"; done < ${work_dir}/url.txt
@@ -1043,7 +1043,7 @@ get_quick_tunnel() {
     sleep 3
     if [ -f /etc/sing-box/argo.log ]; then
         for i in {1..5}; do
-            purple "第 $i 次尝试获取ArgoDoamin中..."
+            purple "第 $i 次尝试获取ArgoDomain中..."
             get_argodomain=$(sed -n 's|.*https://\([^/]*trycloudflare\.com\).*|\1|p' "/etc/sing-box/argo.log")
             [ -n "$get_argodomain" ] && break
             sleep 2
