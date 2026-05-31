@@ -1509,8 +1509,12 @@ add_socks5_inbound() {
         yellow "Socks5 协议已存在，无需重复添加。"; sleep 1; return
     fi
 
-    local current_uuid
-    current_uuid=$(get_current_uuid | tr -d '\n\r')
+    if [ -n "$PORT" ]; then
+        vless_port="$PORT"
+    elif [ -f "${client_dir}" ]; then
+        parsed_vless_port=$(grep 'vless://' "${client_dir}" | grep -oP ':\K[0-9]+(?=\?)' | head -1)
+        [ -n "$parsed_vless_port" ] && vless_port="$parsed_vless_port"
+    fi
 
     while true; do
         reading "请输入 Socks5 监听端口 (回车为vless port + 1): " sk_port
