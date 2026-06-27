@@ -17,16 +17,14 @@
 ## 目录结构
 
 ```
+.github/workflows/auto.yml  # GitHub Actions 工作流
 rustix-auto/
 ├── main.py                     # 主脚本
 ├── notify.py                   # Telegram 通知组件
 ├── requirements.txt            # Python 依赖
-├── accounts.json               # 本地账号配置（已 gitignore，勿提交）
 ├── accounts.example.json       # 账号配置示例
 ├── .env.example                # 环境变量示例
 ├── .gitignore
-├── run.log                     # 运行日志（运行后生成）
-└── .github/workflows/auto.yml  # GitHub Actions 工作流
 ```
 
 ## 本地运行
@@ -34,7 +32,7 @@ rustix-auto/
 ### 1. 安装依赖
 
 ```bash
-pip install -r requirements.txt
+pip install -r rustix-auto/requirements.txt
 python -m playwright install chromium
 ```
 
@@ -54,20 +52,20 @@ python -m playwright install chromium
 ```bash
 # PowerShell
 $env:ACCOUNTS='a@example.com:pwd1,b@example.com:pwd2'
-python main.py
+python rustix-auto/main.py
 ```
 
 ### 3. 运行
 
 ```bash
 # 无头模式
-python main.py
+python rustix-auto/main.py
 
 # 调试模式（弹出浏览器窗口）
-python main.py --headed
+python rustix-auto/main.py --headed
 
 # 只处理指定账号
-python main.py --only a@example.com
+python rustix-auto/main.py --only a@example.com
 ```
 
 ## Telegram 通知（可选）
@@ -108,9 +106,9 @@ GitHub Actions：在仓库 **Settings → Secrets → Actions** 新增：
 ━━━━━━━━━━━━━━━━━━
 账号明细
 1️⃣ a@example.com
-    ✅ ✅ 成功启动
+    ✅ 成功启动
 2️⃣ b@example.com
-    ✅ 🟢 已在线
+    🟢 已在线
 ━━━━━━━━━━━━━━━━━━
 🔗 前往控制台
 ```

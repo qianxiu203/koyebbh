@@ -142,8 +142,7 @@ def notify_summary(results: list) -> bool:
         email = r.get("email", "?")
         status = r.get("status", "unknown")
         ok_r = r.get("ok", False)
-        mark = "✅" if ok_r else "❌"
-        line = f"{idx} <code>{_esc(email)}</code>\n    {mark} {_status_text(status)}"
+        line = f"{idx} <code>{_esc(email)}</code>\n    {_status_text(status)}"
         err = (r.get("error") or "").strip()
         if err and not ok_r:
             line += f" ｜ <code>{_esc(err[:40])}</code>"
